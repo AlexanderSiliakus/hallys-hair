@@ -13,11 +13,13 @@ type State = {
   loaded: boolean;
   reducedMotion: boolean;
   isMobile: boolean;
+  videoEnded: boolean;
 };
 
 type Action =
   | { type: "SET_LOADED" }
-  | { type: "SET_ENV"; reducedMotion: boolean; isMobile: boolean };
+  | { type: "SET_ENV"; reducedMotion: boolean; isMobile: boolean }
+  | { type: "SET_VIDEO_ENDED" };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -25,6 +27,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, loaded: true };
     case "SET_ENV":
       return { ...state, reducedMotion: action.reducedMotion, isMobile: action.isMobile };
+    case "SET_VIDEO_ENDED":
+      return { ...state, videoEnded: true };
     default:
       return state;
   }
@@ -35,17 +39,37 @@ export default function Hero() {
     loaded: false,
     reducedMotion: false,
     isMobile: false,
+    videoEnded: false,
   });
 
   const outerRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
   const currentFrameRef = useRef(0);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: outerRef,
-    offset: ["start start", "end end"],
-  });
+  const handleMobileVideoEnded = useCallback(() => {
+    dispatch({ type: "SET_VIDEO_ENDED" });
+    const video = mobileVideoRef.current;
+    if (video) {
+      video.loop = true;
+      video.play();
+    }
+  }, []);
+
+  // Mobile and reduced-motion render branches never attach outerRef to any
+  // element (there's no scroll-scrub section in those cases), so useScroll
+  // must not be given that ref as a target then — otherwise it errors with
+  // "Target ref is defined but not hydrated" once the branch swaps away.
+  const skipScrollTarget = state.isMobile || state.reducedMotion;
+  const { scrollYProgress } = useScroll(
+    skipScrollTarget
+      ? {}
+      : {
+          target: outerRef,
+          offset: ["start start", "end end"],
+        }
+  );
 
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 80,
@@ -120,8 +144,8 @@ export default function Hero() {
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
     dispatch({ type: "SET_ENV", reducedMotion, isMobile });
 
-    // Phones get a static logo hero (see render branch below) — no frames
-    // are fetched at all, so there's nothing left to preload here.
+    // Phones play the video normally (see render branch below) instead of
+    // scrubbing a frame sequence, so there's nothing to preload here.
     if (isMobile) return;
 
     const images: HTMLImageElement[] = [];
@@ -155,8 +179,9 @@ export default function Hero() {
     drawFrame(index);
   });
 
-  // Phones: the actual video, playing normally on loop — no scroll-scrub,
-  // no frame sequence, just a regular background video.
+  // Phones: the actual video, playing normally — no scroll-scrub, no frame
+  // sequence. The text waits for the first full playthrough before it fades
+  // in, then the video keeps looping quietly in the background.
   if (state.isMobile) {
     return (
       <section
@@ -174,10 +199,11 @@ export default function Hero() {
           />
         ) : (
           <video
+            ref={mobileVideoRef}
             autoPlay
             muted
-            loop
             playsInline
+            onEnded={handleMobileVideoEnded}
             poster="/hero-mobile-poster.jpg"
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
@@ -203,7 +229,12 @@ export default function Hero() {
           aria-hidden="true"
         />
 
-        <div className="relative z-10 flex flex-col items-center text-center px-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: state.reducedMotion || state.videoEnded ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center text-center px-6"
+        >
           <p className="font-mono text-sm uppercase tracking-[0.25em] text-hero-copper mb-6">
             Barbershop · Amstelveen
           </p>
@@ -223,7 +254,7 @@ export default function Hero() {
           >
             Boek een afspraak
           </a>
-        </div>
+        </motion.div>
       </section>
     );
   }
