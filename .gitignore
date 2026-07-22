@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# large media assets
+/Hero videos/
+
+# generated hero frames (run ffmpeg script to regenerate)
+/public/hero-frames/

@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #FFFFFF;
+  --panel: #F3EDE4;
+  --copper: #A8541F;
+  --bronze: #7A3D12;
+  --smoke: #1A1613;
+  --gold: #D97706;
+  /* Hero-only tones: the scroll-scrub video stays dark/cinematic even though
+     the rest of the site is now light, so text drawn over it needs its own
+     always-legible colors instead of the site-wide tokens above. */
+  --hero-copper: #C9834A;
+  --hero-smoke: #EDE7DC;
+  --hero-bg: #1C1712;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-copper: var(--copper);
+  --color-bronze: var(--bronze);
+  --color-smoke: var(--smoke);
+  --color-gold: var(--gold);
+  --color-hero-copper: var(--hero-copper);
+  --color-hero-smoke: var(--hero-smoke);
+  --color-hero-bg: var(--hero-bg);
+  --color-background: var(--ink);
+  --color-foreground: var(--smoke);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--ink);
+  color: var(--smoke);
+  font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Gold focus ring — replaces browser default */
+*:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Copper glow utility */
+.glow-copper {
+  box-shadow: 0 0 24px 0 rgba(168, 84, 31, 0.18);
+}
+
+.glow-copper-hover:hover {
+  box-shadow: 0 0 32px 0 rgba(168, 84, 31, 0.32);
 }
