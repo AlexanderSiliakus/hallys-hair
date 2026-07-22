@@ -39,8 +39,10 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-ink/95 backdrop-blur-sm border-b border-smoke/10 ${
-        scrolled ? "" : "md:bg-transparent md:backdrop-blur-none md:border-b-0"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-ink/95 backdrop-blur-sm border-b border-smoke/10"
+          : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
@@ -60,8 +62,8 @@ export default function Header() {
             />
           </span>
           <span
-            className={`hidden sm:block font-display text-xl font-semibold tracking-[0.15em] uppercase transition-colors duration-300 text-smoke ${
-              scrolled ? "" : "md:text-white"
+            className={`hidden sm:block font-display text-xl font-semibold tracking-[0.15em] uppercase transition-colors duration-300 ${
+              scrolled ? "text-smoke" : "text-white"
             }`}
           >
             Hallys Hair
@@ -98,7 +100,9 @@ export default function Header() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden w-11 h-11 flex items-center justify-center cursor-pointer text-smoke"
+          className={`md:hidden w-11 h-11 flex items-center justify-center cursor-pointer transition-colors duration-300 ${
+            scrolled ? "text-smoke" : "text-white"
+          }`}
           aria-label={open ? "Menu sluiten" : "Menu openen"}
           aria-expanded={open}
         >
