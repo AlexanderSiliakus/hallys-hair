@@ -229,23 +229,16 @@ export default function Hero() {
           aria-hidden="true"
         />
 
+        {/* Visually hidden — the video itself shows the wordmark, but the
+            page still needs exactly one real h1 for semantics/SEO. */}
+        <h1 className="sr-only">Je barbershop in Amstelveen.</h1>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: state.reducedMotion || state.videoEnded ? 1 : 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center text-center px-6"
+          className="absolute bottom-24 left-0 right-0 z-10 flex justify-center px-6"
         >
-          <p className="font-mono text-sm uppercase tracking-[0.25em] text-hero-copper mb-6">
-            Barbershop · Amstelveen
-          </p>
-          <h1 className="font-display text-4xl font-bold text-hero-smoke leading-tight mb-6">
-            Je barbershop
-            <br />
-            in Amstelveen.
-          </h1>
-          <p className="text-lg text-hero-smoke/80 mb-8">
-            Knippen, baard, kleuring en styling — voor jong en oud.
-          </p>
           <a
             href="https://hallyshair.youcanbook.me/"
             target="_blank"
