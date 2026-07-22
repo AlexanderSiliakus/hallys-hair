@@ -155,23 +155,55 @@ export default function Hero() {
     drawFrame(index);
   });
 
-  // Phones: static logo hero, no video at all.
+  // Phones: the actual video, playing normally on loop — no scroll-scrub,
+  // no frame sequence, just a regular background video.
   if (state.isMobile) {
     return (
       <section
         id="hero"
-        className="relative h-screen flex items-center justify-center bg-hero-bg overflow-hidden px-6"
+        className="relative h-screen flex items-center justify-center bg-hero-bg overflow-hidden"
       >
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="relative w-36 h-36 mb-8">
-            <Image
-              src="/logo.png"
-              alt="Hallys Hair"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
+        {state.reducedMotion ? (
+          <Image
+            src="/hero-mobile-poster.jpg"
+            alt=""
+            fill
+            className="object-cover"
+            aria-hidden="true"
+            priority
+          />
+        ) : (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/hero-mobile-poster.jpg"
+            className="absolute inset-0 w-full h-full object-cover"
+            aria-hidden="true"
+          >
+            <source src="/hero-mobile.mp4" type="video/mp4" />
+          </video>
+        )}
+
+        {/* Dark overlay for text legibility */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 30%, rgba(28,23,18,0.6) 100%)",
+          }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute top-0 left-0 right-0 h-32 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, rgba(28,23,18,0.6) 0%, transparent 100%)",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 flex flex-col items-center text-center px-6">
           <p className="font-mono text-sm uppercase tracking-[0.25em] text-hero-copper mb-6">
             Barbershop · Amstelveen
           </p>
